@@ -45,6 +45,7 @@ class HomeCubit extends Cubit<HomeState> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
+            // TODO: Hide token in git commits.
             'Authorization': 'Bearer [token]',
             'OpenAI-Organization': 'org-XOBjcsC2BCIwI3fVhUbZ7q11'
           },
