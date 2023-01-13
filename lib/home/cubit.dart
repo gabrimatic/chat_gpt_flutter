@@ -56,10 +56,9 @@ class HomeCubit extends Cubit<HomeState> {
           "model": "text-davinci-003",
           "prompt": textController.value.text,
           "temperature": 1,
+          "max_tokens": 2048,
         },
       );
-
-      // TODO: Fix the "finish_reason": "length"
 
       if (response.statusCode == HttpStatus.ok) {
         emit(HomeStateLoaded(ChatGptModel.fromMap(response.data)));
