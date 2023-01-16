@@ -1,5 +1,5 @@
 name: chat_gpt_flutter
-description: ChatGPTFlutter app.
+description: A Flutter ChatGPT web app.
 
 publish_to: 'none'
 
@@ -12,7 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
   dio: any
-  url_launcher: ^6.1.7
 
 dev_dependencies:
   flutter_test:

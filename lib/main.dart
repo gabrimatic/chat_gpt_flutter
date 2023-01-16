@@ -9,12 +9,32 @@ import 'home/view.dart';
 void main() {
   setPathUrlStrategy();
 
+  final themeData = ThemeData.light();
+
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
       home: BlocProvider(
         create: (context) => HomeCubit(),
-        child: const CenterTheWidgets(child: HomeView()),
+        child: const CenterTheWidgets(
+          /// This color has also suggested by ChatGPT!
+          color: Color(0XFFA8DADC),
+          child: HomeView(),
+        ),
+      ),
+      theme: themeData.copyWith(
+        splashColor: Colors.blueGrey,
+        primaryColor: Colors.blueGrey,
+        focusColor: Colors.blueGrey,
+        primaryColorDark: Colors.blueGrey,
+        hintColor: Colors.blueGrey,
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle: TextStyle(color: Colors.blueGrey),
+          focusColor: Colors.blueGrey,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blueGrey),
+          ),
+        ),
       ),
     ),
   );

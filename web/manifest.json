@@ -1,11 +1,11 @@
 {
-    "name": "chat_gpt_flutter",
-    "short_name": "chat_gpt_flutter",
+    "name": "ChatGPT Flutter",
+    "short_name": "ChatGPT Flutter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "ChatGPTFlutter app.",
+    "description": "A Flutter ChatGPT web app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

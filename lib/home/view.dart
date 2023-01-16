@@ -1,7 +1,9 @@
+import 'dart:html' as html show window;
+
 import 'package:chat_gpt_flutter/home/cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -22,7 +24,7 @@ class _HomeViewState extends State<HomeView> {
             showAboutDialog(
               context: context,
               applicationName: 'ChatGPT Flutter',
-              applicationVersion: 'v0.5',
+              applicationVersion: 'v0.6',
               applicationLegalese: '',
               applicationIcon: const FlutterLogo(),
               children: [
@@ -30,9 +32,9 @@ class _HomeViewState extends State<HomeView> {
                   title: const Text('By Hossein Yousefpour'),
                   trailing: const Icon(Icons.open_in_new),
                   onTap: () {
-                    launchUrlString(
-                      'https//gabrimatic.info',
-                      mode: LaunchMode.externalApplication,
+                    html.window.open(
+                      'https//www.gabrimatic.info',
+                      '_blank',
                     );
                   },
                 ),
@@ -41,6 +43,31 @@ class _HomeViewState extends State<HomeView> {
           },
           icon: const Icon(Icons.info_outline_rounded),
         ),
+        actions: [
+          BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              if (state is HomeStateLoaded) {
+                return IconButton(
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(
+                      text: state.chatGptModel.result,
+                    )).whenComplete(() {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                          'Result has been copied to the clipboard.',
+                        )),
+                      );
+                    });
+                  },
+                  icon: const Icon(Icons.copy),
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
+          )
+        ],
       ),
       bottomSheet: Container(
         decoration: const BoxDecoration(
@@ -59,10 +86,10 @@ class _HomeViewState extends State<HomeView> {
         ),
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
+          maxLines: 2,
           controller: context.read<HomeCubit>().textController,
           decoration: InputDecoration(
               label: const Text('What\'s on your mind...?'),
-              // TODO: Fix colors
               suffixIcon: TextButton.icon(
                 style: TextButton.styleFrom(foregroundColor: Colors.deepPurple),
                 onPressed: context.read<HomeCubit>().connect,
@@ -72,31 +99,45 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       body: Center(
-        child: BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) {
-            if (state is HomeStateLoading) {
-              return const CircularProgressIndicator();
-            }
+        child: Scrollbar(
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(bottom: 64),
+            children: [
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  if (state is HomeStateInit) {
+                    return const SizedBox.shrink();
+                  }
 
-            String text = '';
-            if (state is HomeStateLoaded) {
-              text = state.chatGptModel.result;
-            } else if (state is HomeStateError) {
-              text = 'IDK!';
-            }
+                  if (state is HomeStateLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 16,
-                  letterSpacing: 2,
-                  color: Colors.black87,
-                ),
+                  String text = '';
+                  if (state is HomeStateLoaded) {
+                    text = state.chatGptModel.result;
+                  } else if (state is HomeStateError) {
+                    text = 'IDK!';
+                  }
+
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SelectableText(
+                        text,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          letterSpacing: 2,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ],
+          ),
         ),
       ),
     );
