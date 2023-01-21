@@ -24,7 +24,7 @@ class _HomeViewState extends State<HomeView> {
             showAboutDialog(
               context: context,
               applicationName: 'ChatGPT Flutter',
-              applicationVersion: 'v0.6',
+              applicationVersion: 'v0.7',
               applicationLegalese: '',
               applicationIcon: const FlutterLogo(),
               children: [
@@ -33,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
                   trailing: const Icon(Icons.open_in_new),
                   onTap: () {
                     html.window.open(
-                      'https//www.gabrimatic.info',
+                      'https://gabrimatic.info/',
                       '_blank',
                     );
                   },
@@ -54,9 +54,10 @@ class _HomeViewState extends State<HomeView> {
                     )).whenComplete(() {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
+                            backgroundColor: Colors.blueGrey,
                             content: Text(
-                          'Result has been copied to the clipboard.',
-                        )),
+                              'Result has been copied to the clipboard.',
+                            )),
                       );
                     });
                   },
@@ -87,12 +88,25 @@ class _HomeViewState extends State<HomeView> {
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
           maxLines: 2,
+          focusNode: FocusNode(
+            onKey: (FocusNode node, RawKeyEvent evt) {
+              if (evt.isShiftPressed &&
+                  evt.isKeyPressed(LogicalKeyboardKey.enter)) {
+                if (evt is RawKeyDownEvent) {
+                  context.read<HomeCubit>().sendRequest();
+                }
+                return KeyEventResult.handled;
+              } else {
+                return KeyEventResult.ignored;
+              }
+            },
+          ),
           controller: context.read<HomeCubit>().textController,
           decoration: InputDecoration(
               label: const Text('What\'s on your mind...?'),
               suffixIcon: TextButton.icon(
                 style: TextButton.styleFrom(foregroundColor: Colors.deepPurple),
-                onPressed: context.read<HomeCubit>().connect,
+                onPressed: context.read<HomeCubit>().sendRequest,
                 icon: const Icon(Icons.search_rounded),
                 label: const Text('Answer!'),
               )),
@@ -107,11 +121,26 @@ class _HomeViewState extends State<HomeView> {
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
                   if (state is HomeStateInit) {
-                    return const SizedBox.shrink();
+                    return const Center(
+                      child: Text(
+                        'Hint: To submit, simply press Shift-Enter!',
+                        style: TextStyle(
+                          fontSize: 12,
+                          letterSpacing: 2,
+                          color: Colors.black26,
+                        ),
+                      ),
+                    );
                   }
 
                   if (state is HomeStateLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.purple,
+                        ),
+                      ),
+                    );
                   }
 
                   String text = '';

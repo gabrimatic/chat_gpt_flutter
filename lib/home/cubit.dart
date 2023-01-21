@@ -31,7 +31,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   HomeCubit() : super(HomeStateInit());
 
-  Future<void> connect() async {
+  Future<void> sendRequest() async {
+    if (textController.value.text.isEmpty) return;
+
     // In seconds
     const timeout = 8;
 
