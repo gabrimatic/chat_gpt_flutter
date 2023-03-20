@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:center_the_widgets/center_the_widgets.dart';
 import 'package:chat_gpt_flutter/home/cubit.dart';
 import 'package:flutter/material.dart';

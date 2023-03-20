@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, avoid_web_libraries_in_flutter
+
 import 'dart:html' as html show window;
 
 import 'package:chat_gpt_flutter/home/cubit.dart';
@@ -24,8 +26,7 @@ class _HomeViewState extends State<HomeView> {
             showAboutDialog(
               context: context,
               applicationName: 'ChatGPT Flutter',
-              applicationVersion: 'v0.7',
-              applicationLegalese: '',
+              applicationVersion: 'chatGPT model: gpt-3.5-turbo',
               applicationIcon: const FlutterLogo(),
               children: [
                 ListTile(
@@ -87,7 +88,8 @@ class _HomeViewState extends State<HomeView> {
         ),
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(
-          maxLines: 2,
+          minLines: 2,
+          maxLines: 6,
           focusNode: FocusNode(
             onKey: (FocusNode node, RawKeyEvent evt) {
               if (evt.isShiftPressed &&
@@ -152,12 +154,17 @@ class _HomeViewState extends State<HomeView> {
 
                   return Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 16,
+                        bottom: 64,
+                      ),
                       child: SelectableText(
                         text,
                         style: const TextStyle(
                           fontSize: 16,
-                          letterSpacing: 2,
+                          letterSpacing: 1.5,
                           color: Colors.black87,
                         ),
                       ),

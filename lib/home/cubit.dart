@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:io';
 
 import 'package:chat_gpt_flutter/chat_gpt_model/chat_gpt_model.dart';
@@ -34,30 +36,38 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> sendRequest() async {
     if (textController.value.text.isEmpty) return;
 
-    // In seconds
-    const timeout = 8;
+    const timeout = Duration(seconds: 8);
 
     emit(HomeStateLoading());
 
     Response? response;
 
+    final messages = [
+      {"role": "system", "content": "You are an AI language model."},
+      {
+        "role": "user",
+        "content": textController.value.text,
+      },
+    ];
+
     try {
       response = await _dio.post(
-        'https://api.openai.com/v1/completions',
+        'https://api.openai.com/v1/chat/completions',
         options: Options(
           headers: {
             'Content-Type': 'application/json',
             // TODO: Hide token in git commits.
             'Authorization': 'Bearer [token]',
-            'OpenAI-Organization': 'org-XOBjcsC2BCIwI3fVhUbZ7q11'
+            // TODO: Hide OpenAI-Organization in git commits.
+            'OpenAI-Organization': '[id]'
           },
-          sendTimeout: timeout * 1000,
-          receiveTimeout: timeout * 1000,
+          sendTimeout: timeout,
+          receiveTimeout: timeout,
         ),
         data: {
-          "model": "text-davinci-003",
-          "prompt": textController.value.text,
-          "temperature": 1,
+          "model": "gpt-3.5-turbo",
+          "messages": messages,
+          "temperature": 0.8,
           "max_tokens": 2048,
         },
       );

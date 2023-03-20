@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'choice.dart';
-import 'usage.dart';
+import 'package:chat_gpt_flutter/chat_gpt_model/usage.dart';
 
 class ChatGptModel {
   String? id;
   String? object;
   int? created;
   String? model;
-  List<Choice>? choices;
+  dynamic choices;
   Usage? usage;
 
   ChatGptModel({
@@ -25,9 +24,7 @@ class ChatGptModel {
         object: data['object'] as String?,
         created: data['created'] as int?,
         model: data['model'] as String?,
-        choices: (data['choices'] as List<dynamic>?)
-            ?.map((e) => Choice.fromMap(e as Map<String, dynamic>))
-            .toList(),
+        choices: data['choices'][0]['message']['content'],
         usage: data['usage'] == null
             ? null
             : Usage.fromMap(data['usage'] as Map<String, dynamic>),
@@ -38,30 +35,22 @@ class ChatGptModel {
         'object': object,
         'created': created,
         'model': model,
-        'choices': choices?.map((e) => e.toMap()).toList(),
+        'choices': choices,
         'usage': usage?.toMap(),
       };
 
   String get result {
-    String res = '';
-    if (choices == null) return 'IDK!';
-
-    choices!.forEach((element) {
-      res += '${element.text}\n';
-    });
-    return res;
+    return choices ?? 'IDK!';
   }
 
-  /// `dart:convert`
-  ///
-  /// Parses the string and returns the resulting Json object as [ChatGptModel].
+  // `dart:convert`
+  // Parses the string and returns the resulting Json object as [ChatGptModel].
   factory ChatGptModel.fromJson(String data) {
     return ChatGptModel.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
-  /// `dart:convert`
-  ///
-  /// Converts [ChatGptModel] to a JSON string.
+  // `dart:convert`
+  // Converts [ChatGptModel] to a JSON string.
   String toJson() => json.encode(toMap());
 
   ChatGptModel copyWith({
@@ -69,7 +58,7 @@ class ChatGptModel {
     String? object,
     int? created,
     String? model,
-    List<Choice>? choices,
+    dynamic choices,
     Usage? usage,
   }) {
     return ChatGptModel(
