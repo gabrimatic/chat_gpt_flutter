@@ -16,6 +16,8 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  bool _isEditing = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,6 +103,22 @@ class _HomeViewState extends State<HomeView> {
           controller: context.read<HomeCubit>().textController,
           decoration: InputDecoration(
             labelText: 'What\'s on your mind...?',
+            prefixIcon: _isEditing
+                ?
+                // TODO: Fix this design
+                TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.blueGrey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isEditing = false;
+                      });
+                      context.read<HomeCubit>().cancelEdit();
+                    },
+                    child: const Text('Cancel\nEditing'),
+                  )
+                : null,
             suffixIcon: TextButton.icon(
               style: TextButton.styleFrom(foregroundColor: Colors.deepPurple),
               onPressed: context.read<HomeCubit>().sendRequest,
@@ -204,6 +222,9 @@ class _HomeViewState extends State<HomeView> {
                               if (isUser)
                                 IconButton(
                                   onPressed: () {
+                                    setState(() {
+                                      _isEditing = true;
+                                    });
                                     context.read<HomeCubit>().onEdit(index);
                                   },
                                   icon: const Icon(Icons.edit, size: 16),

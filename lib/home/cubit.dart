@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// TODO: Set this to 'false' on production
 const _isMock = false;
 
 class HomeState {}
@@ -34,7 +35,7 @@ class HomeStateLoaded extends HomeState {
 class HomeCubit extends Cubit<HomeState> {
   final textController = TextEditingController();
   final _dio = Dio();
-  int editingIndex = -1;
+  int _editingIndex = -1;
 
   // Initialize the conversation history
   List<MessagesModel> messages = [];
@@ -42,16 +43,21 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeStateInit());
 
   void onEdit(int index) {
-    editingIndex = index;
+    _editingIndex = index;
     textController.text = messages[index].content;
     textController.selection = TextSelection.fromPosition(TextPosition(
       offset: messages[index].content.length,
     ));
   }
 
+  void cancelEdit() {
+    _editingIndex = -1;
+    textController.clear();
+  }
+
   Future<void> sendRequest() async {
     if (_isMock) {
-      _mockSendRequest();
+      mockSendRequest();
       return;
     }
 
@@ -64,9 +70,9 @@ class HomeCubit extends Cubit<HomeState> {
     Response? response;
 
     // Add the user's message to the conversation history
-    if (editingIndex > -1) {
+    if (_editingIndex > -1) {
       messages = [
-        ...messages.sublist(0, editingIndex),
+        ...messages.sublist(0, _editingIndex),
         MessagesModel(role: Role.user, content: textController.value.text),
       ];
     } else {
@@ -116,19 +122,19 @@ class HomeCubit extends Cubit<HomeState> {
       emit(HomeStateError(errorMessage: e.toString()));
       debugPrint('=== Error: $e ===');
     } finally {
-      editingIndex = -1;
+      _editingIndex = -1;
     }
   }
 
-  Future<void> _mockSendRequest() async {
+  Future<void> mockSendRequest() async {
     if (textController.value.text.isEmpty) return;
 
     emit(HomeStateLoading());
 
     // Add the user's message to the conversation history
-    if (editingIndex > -1) {
+    if (_editingIndex > -1) {
       messages = [
-        ...messages.sublist(0, editingIndex),
+        ...messages.sublist(0, _editingIndex),
         MessagesModel(role: Role.user, content: textController.value.text),
       ];
     } else {
